@@ -1,0 +1,131 @@
+.App {
+
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body, html, label, input, button, div, li, p, span {
+  font-family: 'Open Sans';
+  font-size: 16px;
+  font-weight: bold !important;
+}
+
+label {
+  display: block !important;
+}
+
+input[type="text"], select {
+  border: 3px solid #000;
+  font-weight: bold;
+  padding: 5px;
+}
+
+button {
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  padding: 2px 14px 5px;
+}
+
+button svg {
+  margin: 0 3px;
+  padding-top: 2px;
+}
+
+.add-dish {
+  border: 5px solid #000;
+  border-radius: 48px;
+  color: #4599b1;
+  cursor: pointer;
+  font-size: 48px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.dishes-box {
+  border: 3px solid #000;
+  padding: 5px 10px;
+  width: 150px;
+}
+
+.dishes-box p {
+  margin-bottom: 10px;
+}
+
+.error-msg {
+  color: #c00;
+  font-size: 14px;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+.form {
+  display: block;
+}
+
+.mt-15 {
+  margin-top: 15px !important;
+}
+
+.notification {
+  animation: 1s fadeOut;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    visibility: visible;
+    opacity: 0;
+  }
+}
+
+.pt-30 {
+  padding-top: 30px !important;
+}
+
+.pt-50 {
+  padding-top: 50px !important;
+}
+
+.pt-100 {
+  padding-top: 100px !important;
+}
+
+.pl-180 {
+  padding-left: 180px !important;
+}
+
+.tabs {
+  display: block;
+  list-style-type: none;
+  margin: 0 0 50px;
+  padding: 0;
+}
+
+.tabs li {
+  border: 3px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  float: left;
+  font-weight: bold;
+  padding: 2px 18px 5px 16px;
+  position: relative;
+}
+
+.tabs li.active {
+  background: #4599b1;
+}

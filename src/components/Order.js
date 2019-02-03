@@ -20,7 +20,8 @@ class Order extends Component {
       showResto: false,
       showDishes: false,
       showReview: false,
-      showNotification: false
+      showNotification: false,
+      formSubmitted: false
     }
 
     this.addDish = this.addDish.bind(this);
@@ -149,6 +150,10 @@ class Order extends Component {
     e.preventDefault();
 
     console.log(this.state.data)
+    this.setState({
+      formSubmitted: true
+    })
+    alert('Form successfully submitted. Please check console for submitted data.');
   }
 
   selectMeal(e) {
@@ -263,7 +268,7 @@ class Order extends Component {
 
     if (!data["resto"]) {
       formIsValid = false;
-      errors["meal"] = "Error: Restaurant is required";
+      errors["resto"] = "Error: Restaurant is required";
     }
 
     this.setState({
@@ -296,6 +301,7 @@ class Order extends Component {
     const showDishes = this.state.showDishes ? {display: 'block'} : {display: 'none'};
     const showReview = this.state.showReview ? {display: 'block'} : {display: 'none'};
     const showNotification = this.state.showNotification ? {display: 'block'} : {display: 'none'};
+    const formSubmitted = this.state.formSubmitted ? true : false;
     const dishes = this.state.data.dishes;
 
     return (
@@ -433,7 +439,7 @@ class Order extends Component {
                   <button className="btnContinue" onClick={this.handlePrev}>Previous</button>
                 </div>
                 <div className="col-md-4">
-                  <button className="btnSubmit" onClick={this.handleSubmit}>Submit</button>
+                  <button className="btnSubmit" onClick={this.handleSubmit} disabled={formSubmitted}>Submit</button>
                 </div>
                 <div className="col-md-4"></div>
               </div>

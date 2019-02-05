@@ -58,47 +58,34 @@ class Order extends Component {
     return total;
   }
 
+  passStates(step) {
+    this.setState({
+      data: {
+        meal: this.state.data.meal,
+        people: this.state.data.people,
+        resto: this.state.data.resto,
+        dishes: this.state.data.dishes,
+        dishname: this.state.data.dishname,
+        servings: this.state.data.servings
+      },
+      step: step
+    });
+  }
+
   handlePrev(e) {
     e.preventDefault();
 
     switch (this.state.step) {
       case 3:
-        this.setState({
-          data: {
-            meal: this.state.data.meal,
-            people: this.state.data.people,
-            resto: this.state.data.resto,
-            dishes: this.state.data.dishes,
-            servings: this.state.data.servings
-          },
-          step: 2
-        });
+        this.passStates(2);
         break;
 
       case 4:
-        this.setState({
-          data: {
-            meal: this.state.data.meal,
-            people: this.state.data.people,
-            resto: this.state.data.resto,
-            dishes: this.state.data.dishes,
-            servings: this.state.data.servings
-          },
-          step: 3
-        });
+        this.passStates(3);
         break;
 
       default:
-        this.setState({
-          data: {
-            meal: this.state.data.meal,
-            people: this.state.data.people,
-            resto: this.state.data.resto,
-            dishes: this.state.data.dishes,
-            servings: this.state.data.servings
-          },
-          step: 1
-        });
+        this.passStates(1);
     }
   }
 
@@ -108,47 +95,19 @@ class Order extends Component {
     switch (this.state.step) {
       case 2:
         if (this.validateResto()) {
-          this.setState({
-            data: {
-              meal: this.state.data.meal,
-              people: this.state.data.people,
-              resto: this.state.data.resto,
-              dishes: this.state.data.dishes,
-              dishname: this.state.data.dishname,
-              servings: this.state.data.servings
-            },
-            step: 3
-          })
+          this.passStates(3);
         }
         break;
 
       case 3:
         if (this.validateDish()) {
-          this.setState({
-            data: {
-              meal: this.state.data.meal,
-              people: this.state.data.people,
-              resto: this.state.data.resto,
-              dishes: this.state.data.dishes,
-              servings: this.state.data.servings
-            },
-            step: 4
-          })
+          this.passStates(4);
         }
         break;
 
       default:
         if (this.validateMeal()) {
-          this.setState({
-            data: {
-              meal: this.state.data.meal,
-              people: this.state.data.people,
-              resto: this.state.data.resto,
-              dishes: this.state.data.dishes,
-              servings: this.state.data.servings
-            },
-            step: 2
-          })
+          this.passStates(2);
         }
     }
   }
@@ -205,6 +164,15 @@ class Order extends Component {
   }
 
   addDish() {
+    if (this.state.data.dishname === '') {
+      this.showNotification(
+        'Error',
+        'You must select a dish',
+        'danger'
+      );
+      return;
+    }
+
     if (this.state.data.servings > 10) {
       this.showNotification(
         'Error',

@@ -199,7 +199,7 @@ class Order extends Component {
           people: this.state.data.people,
           resto: this.state.data.resto,
           dishes: this.state.data.dishes.map(
-            dish => (dish.dish_id === x ? Object.assign({}, dish, {servings: this.state.data.servings}) : dish)
+            dish => (dish.dish_id === x ? Object.assign({}, dish, {servings: (parseInt(dish.servings) + parseInt(this.state.data.servings))}) : dish)
           ),
           dishname: '',
           servings: 1,

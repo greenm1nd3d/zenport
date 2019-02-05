@@ -25,7 +25,7 @@ label {
   display: block !important;
 }
 
-input[type="text"], select {
+input[type="text"], input[type="number"], select {
   border: 3px solid #000;
   font-weight: bold;
   padding: 5px;
@@ -64,24 +64,12 @@ button svg {
   margin-bottom: 10px;
 }
 
-.error-msg {
-  color: #c00;
-  font-size: 14px;
-  font-style: italic;
-  margin-top: 10px;
-}
-
 .form {
   display: block;
 }
 
 .mt-15 {
   margin-top: 15px !important;
-}
-
-.notification {
-  animation: 1s fadeOut;
-  animation-fill-mode: forwards;
 }
 
 @keyframes fadeOut {

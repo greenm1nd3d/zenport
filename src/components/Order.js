@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusCircle, faAngleDoubleLeft, faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons'
 
+import ReactNotification from "react-notifications-component";
+import "react-notifications-component/dist/theme.css";
+
 class Order extends Component {  
   constructor(props) {
     super(props);
@@ -15,9 +18,7 @@ class Order extends Component {
         servings: 1,
         dishes: []
       },
-      errors: {},
       step: 1,
-      showNotification: false,
       formSubmitted: false
     }
 
@@ -30,16 +31,31 @@ class Order extends Component {
     this.selectResto = this.selectResto.bind(this);
     this.selectDish = this.selectDish.bind(this);
     this.selectServings = this.selectServings.bind(this);
+
+    this.showNotification = this.showNotification.bind(this);
+    this.notificationDOMRef = React.createRef();
   }
 
-  componentDidUpdate() {
-    if (this.state.showNotification) {
-      window.setTimeout(() => {
-        this.setState({
-          showNotification: false
-        });
-      }, 1000);
-    }
+  showNotification(title, message, msgtype) {
+    this.notificationDOMRef.current.addNotification({
+      title: title,
+      message: message,
+      type: msgtype,
+      insert: "top",
+      container: "top-right",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: { duration: 2000 },
+      dismissable: { click: true }
+    });
+  }
+
+  getTotalServings() {
+    var total = 0;
+    this.state.data.dishes.map(s =>
+      total += parseInt(s.servings)
+    );
+    return total;
   }
 
   handlePrev(e) {
@@ -101,8 +117,7 @@ class Order extends Component {
               dishname: this.state.data.dishname,
               servings: this.state.data.servings
             },
-            step: 3,
-            errors: {}
+            step: 3
           })
         }
         break;
@@ -117,8 +132,7 @@ class Order extends Component {
               dishes: this.state.data.dishes,
               servings: this.state.data.servings
             },
-            step: 4,
-            errors: {}
+            step: 4
           })
         }
         break;
@@ -133,8 +147,7 @@ class Order extends Component {
               dishes: this.state.data.dishes,
               servings: this.state.data.servings
             },
-            step: 2,
-            errors: {}
+            step: 2
           })
         }
     }
@@ -147,7 +160,11 @@ class Order extends Component {
     this.setState({
       formSubmitted: true
     })
-    alert('Form successfully submitted. Please check console for submitted data.');
+    this.showNotification(
+      'Success',
+      'Form successfully submitted. Please check console for submitted data.',
+      'success'
+    );
   }
 
   selectMeal(e) {
@@ -188,8 +205,48 @@ class Order extends Component {
   }
 
   addDish() {
+    if (this.state.data.servings > 10) {
+      this.showNotification(
+        'Error',
+        'Number of servings cannot be greater than 10',
+        'danger'
+      );
+      return;
+    }
+
     var dishes = this.state.data.dishes;
     var arr = this.state.data.dishes.slice();
+    var x = 0;
+
+    for (var i=0; i<dishes.length; i++) {
+      if (arr[i].dishname === this.state.data.dishname) {
+        x = arr[i].dish_id;
+      }
+    }
+
+    if (x !== 0) {
+      this.setState({
+        data: {
+          meal: this.state.data.meal,
+          people: this.state.data.people,
+          resto: this.state.data.resto,
+          dishes: this.state.data.dishes.map(
+            dish => (dish.dish_id === x ? Object.assign({}, dish, {servings: this.state.data.servings}) : dish)
+          ),
+          dishname: '',
+          servings: 1,
+        }
+      });
+
+      this.showNotification(
+        'Success',
+        'Dish already on your list. Updating number of servings',
+        'success'
+      );
+
+      return;
+    }
+
     arr.push({
       dish_id: dishes.length + 1,
       dishname: this.state.data.dishname,
@@ -204,10 +261,14 @@ class Order extends Component {
         dishes: arr,
         dishname: '',
         servings: 1
-      },
-      showNotification: true,
-      errors: {}
+      }
     });
+
+    this.showNotification(
+      'Success',
+      'Dish successfully added to order list!',
+      'success'
+    );
   }
 
   selectDish(e) {
@@ -238,62 +299,75 @@ class Order extends Component {
 
   validateMeal() {
     let data = this.state.data;
-    let errors = {};
     let formIsValid = true;
 
     if (!data["meal"]) {
       formIsValid = false;
-      errors["meal"] = "Error: Meal type is required";
+      this.showNotification(
+        'Error',
+        'Meal type is required',
+        'danger'
+      );
     }
 
     if (!data["people"]) {
       formIsValid = false;
-      errors["people"] = "Error: Number of people is required";
+      this.showNotification(
+        'Error',
+        'Number of people is required',
+        'danger'
+      );
     }
-
-    this.setState({
-      errors: errors
-    });
 
     return formIsValid;
   }
 
   validateResto() {
     let data = this.state.data;
-    let errors = {};
     let formIsValid = true;
 
     if (!data["resto"]) {
       formIsValid = false;
-      errors["resto"] = "Error: Restaurant is required";
+      this.showNotification(
+        'Error',
+        'Restaurant is required',
+        'danger'
+      );
     }
-
-    this.setState({
-      errors: errors
-    });
 
     return formIsValid;
   }
 
   validateDish() {
     let data = this.state.data;
-    let errors = {};
     let formIsValid = true;
+    var servings = 0;
+    const people = this.state.data.people;
 
     if (data["dishes"].length < 1) {
+      this.showNotification(
+        'Success',
+        'At least one dish is required',
+        'danger'
+      );
       formIsValid = false;
-      errors["dishes"] = "Error: At least one dish is required";
     }
 
-    this.setState({
-      errors: errors
-    });
+    servings = this.getTotalServings();
+
+    if (servings < people) {
+      this.showNotification(
+        'Success',
+        'Total servings must be greater than the number of people',
+        'danger'
+      );
+      formIsValid = false;
+    }
 
     return formIsValid;
   }
 
   render() {
-    const showNotification = this.state.showNotification ? {display: 'block'} : {display: 'none'};
     const formSubmitted = this.state.formSubmitted ? true : false;
     const dishes = this.state.data.dishes;
     var stepHTML = '';
@@ -310,7 +384,6 @@ class Order extends Component {
                 <option value="Kozue">Kozue</option>
                 <option value="Narisawa">Narisawa</option>
               </select>
-              <div className="error-msg">{this.state.errors.resto}</div>
             </div>
           </div>
           <div className="row pt-100">
@@ -339,21 +412,13 @@ class Order extends Component {
             </div>
             <div className="col-md-4">
               <label htmlFor="servings">Please enter number of servings</label>
-              <select name="servings" onChange={this.selectServings} value={this.state.data.servings}>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
+              <input type="number" name="servings" min="1" max="10" onChange={this.selectServings} value={this.state.data.servings} />
             </div>
             <div className="col-md-4"></div>
           </div>
           <div className="row pt-50">
             <div className="col-md-12">
               <FontAwesomeIcon icon={faPlusCircle} className="add-dish" onClick={this.addDish} />
-              <div className="error-msg">{this.state.errors.dishes}</div>
-              <p className="notification mt-15" style={showNotification}>Dish successfully added!</p>
             </div>
           </div>
           <div className="row pt-100">
@@ -415,20 +480,12 @@ class Order extends Component {
                 <option value="Lunch">Lunch</option>
                 <option value="Dinner">Dinner</option>
               </select>
-              <div className="error-msg">{this.state.errors.meal}</div>
             </div>
           </div>
           <div className="row pl-180 pt-30">
             <div className="col-md-12">
               <label htmlFor="people">Please enter number of people</label>
-              <select name="people" onChange={this.selectPeople} value={this.state.data.people}>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-              <div className="error-msg">{this.state.errors.people}</div>
+              <input type="number" name="people" min="1" max="10" onChange={this.selectPeople} value={this.state.data.people} />
             </div>
           </div>
           <div className="row pt-100">
@@ -453,6 +510,7 @@ class Order extends Component {
           <div className="form pt-100">
             {stepHTML}
           </div>
+          <ReactNotification ref={this.notificationDOMRef} />
         </div>
       </div>
     );
